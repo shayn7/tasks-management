@@ -4,6 +4,7 @@ import com.naamad.tasksmanagement.dto.TaskRequest;
 import com.naamad.tasksmanagement.dto.TaskResponse;
 import com.naamad.tasksmanagement.entity.Task;
 import com.naamad.tasksmanagement.entity.User;
+import com.naamad.tasksmanagement.enums.Status;
 import com.naamad.tasksmanagement.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,20 +27,55 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public Long addTask(TaskRequest taskRequest) {
-        Optional<User> user = userService.findUserById(taskRequest.getAssignee().getUserId());
-        if(user.isEmpty()) throw new RuntimeException("User does not exist!");
-
+        User user = getUser(taskRequest);
         Task task = Task
                 .builder()
                 .title(taskRequest.getTitle())
                 .description(taskRequest.getDescription())
                 .status(taskRequest.getStatus())
-                .assignee(user.get())
+                .assignee(user)
                 .build();
 
         return taskRepository.save(task).getTaskId();
     }
 
+    @Override
+    public Long updateTask(Long id, TaskRequest taskRequest) {
+        Optional<Task> task = findTaskById(id);
+        if (task.isEmpty()) throw new RuntimeException("Task not found!");
+        User user = getUser(taskRequest);
+        task.get().setTitle(taskRequest.getTitle());
+        task.get().setDescription(taskRequest.getDescription());
+        task.get().setStatus(taskRequest.getStatus());
+        task.get().setAssignee(user);
+
+        return taskRepository.save(task.get()).getTaskId();
+    }
+
+    @Override
+    public Optional<Task> findTaskById(Long id) {
+        return taskRepository.findById(id);
+    }
+
+    @Override
+    public void deleteTask(Long id) {
+        findTaskById(id).ifPresentOrElse(taskRepository::delete, () -> { throw new RuntimeException("Task does not exist!"); });
+    }
+
+    @Override
+    public void markTaskAsCompleted(Long id) {
+        Optional<Task> task = findTaskById(id);
+        if (task.isEmpty()) throw new RuntimeException("Task not found!");
+        task.get().setStatus(Status.COMPLETED);
+        taskRepository.save(task.get());
+    }
+
+
+    private User getUser(TaskRequest taskRequest) {
+        Optional<User> user = userService.findUserById(taskRequest.getAssignee().getUserId());
+        if(user.isEmpty()) throw new RuntimeException("User does not exist!");
+        return user.get();
+    }
 
     private TaskResponse mapToTaskResponse(Task task) {
         return TaskResponse

@@ -2,7 +2,6 @@ package com.naamad.tasksmanagement.controller;
 
 import com.naamad.tasksmanagement.dto.TaskRequest;
 import com.naamad.tasksmanagement.dto.TaskResponse;
-import com.naamad.tasksmanagement.entity.Task;
 import com.naamad.tasksmanagement.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,4 +27,23 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     public List<TaskResponse> getAllTasks(){
         return taskService.getAllTasks();
-    }}
+    }
+
+    @DeleteMapping("delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTask(@PathVariable Long id){
+        taskService.deleteTask(id);
+    }
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Long updateTask(@PathVariable("id") Long id, @Valid @RequestBody TaskRequest taskRequest){
+        return taskService.updateTask(id, taskRequest);
+    }
+
+    @PutMapping("/completed/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void markTaskAsCompleted(@PathVariable("id") Long id) {
+        taskService.markTaskAsCompleted(id);
+    }
+}
+

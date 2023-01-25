@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.util.List;
 
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -19,6 +20,18 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse addUser(@Valid @RequestBody UserRequest userRequest){
         return userService.addUser(userRequest);
+    }
+
+    @GetMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserResponse> getUsers(){
+        return userService.getUsers();
+    }
+
+    @DeleteMapping("delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable Long id){
+        userService.deleteUser(id);
     }
 
 }

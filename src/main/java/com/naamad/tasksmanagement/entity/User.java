@@ -1,11 +1,13 @@
 package com.naamad.tasksmanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.naamad.tasksmanagement.enums.Active;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +16,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tbl_user")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;

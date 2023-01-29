@@ -1,14 +1,14 @@
 package com.naamad.tasksmanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.naamad.tasksmanagement.enums.Status;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import javax.persistence.*;
+import java.util.List;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -22,9 +22,11 @@ public class Task {
     private String title;
     private String description;
     private Status status;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User assignee;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
 }

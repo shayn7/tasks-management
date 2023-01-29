@@ -1,11 +1,15 @@
-package com.naamad.tasksmanagement.service;
+package com.naamad.tasksmanagement.service_impl;
 
+import com.naamad.tasksmanagement.dto.CommentResponse;
 import com.naamad.tasksmanagement.dto.TaskRequest;
 import com.naamad.tasksmanagement.dto.TaskResponse;
+import com.naamad.tasksmanagement.entity.Comment;
 import com.naamad.tasksmanagement.entity.Task;
 import com.naamad.tasksmanagement.entity.User;
 import com.naamad.tasksmanagement.enums.Status;
 import com.naamad.tasksmanagement.repository.TaskRepository;
+import com.naamad.tasksmanagement.service.TaskService;
+import com.naamad.tasksmanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class TaskServiceImpl implements TaskService{
+public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserService userService;
@@ -78,13 +82,24 @@ public class TaskServiceImpl implements TaskService{
     }
 
     private TaskResponse mapToTaskResponse(Task task) {
+
         return TaskResponse
                 .builder()
                 .taskId(task.getTaskId())
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .status(task.getStatus())
-                .assignee(task.getAssignee())
+                .comments(task.getComments().stream().map(this::mapToCommentsResponse).collect(Collectors.toList()))
+               // .assignee(task.getAssignee())
+                .build();
+    }
+
+    private CommentResponse mapToCommentsResponse(Comment comment) {
+
+       return CommentResponse
+                .builder()
+                .comment(comment.getComment())
+                .created(comment.getCreated())
                 .build();
     }
 }
